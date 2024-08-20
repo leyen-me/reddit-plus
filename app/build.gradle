@@ -1,0 +1,53 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace 'com.leyen.reddit'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.leyen.reddit"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+//tasks.register("buildWeb") {
+//    doLast {
+//        def webDir = "${project.rootDir}\\web"
+//        println(webDir)
+//        exec {
+//            workingDir webDir
+//            commandLine 'cmd', '/c', 'pnpm', 'build'
+//            ignoreExitValue = false
+//        }
+//    }
+//}
+//tasks.named("preBuild") {
+//    dependsOn("buildWeb")
+//}
+
+dependencies {
+
+    implementation libs.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}
