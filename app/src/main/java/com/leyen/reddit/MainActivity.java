@@ -1,6 +1,8 @@
 package com.leyen.reddit;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
@@ -17,6 +19,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,11 +61,48 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
+                if (url.startsWith("https://www.reddit.com/")) {
+                    // 让 WebView 加载这个 URL
+                    return false;
+                } else {
+                    // 在外部浏览器中打开这个 URL
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                    startActivity(intent);
+                    return true;
+                }
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                // 读取CSS文件内容
+                try {
+                    InputStream inputStream = getAssets().open("style/style.css");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder cssBuilder = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        cssBuilder.append(line).append("\n");
+                    }
+                    reader.close();
+                    String css = cssBuilder.toString();
+                    // 注入CSS到网页
+                    String js = "var style = document.createElement('style');" +
+                            "style.type = 'text/css';" +
+                            "style.innerHTML = `" + css + "`;" +
+                            "document.head.appendChild(style);";
+                    webView.evaluateJavascript(js, null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
-        webView.loadUrl("https://reddit.com");
+        webView.setWebContentsDebuggingEnabled(true);
+        webView.loadUrl("https://www.reddit.com/");
 
+
+//        https://www.reddit.com/?rdt=42985
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
@@ -81,8 +124,5 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
-
-
-        ;
     }
 }

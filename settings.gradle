@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "VueAndroid"
+rootProject.name = "Reddit"
 include ':app'
