@@ -1,0 +1,8 @@
+
+/* 隐藏打开APP的弹窗 */
+shreddit-async-loader[bundlename='app_selector'] {
+  display: none !important;
+}
+body {
+  overflow: auto !important;
+}
