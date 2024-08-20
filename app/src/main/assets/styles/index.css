@@ -1,8 +1,13 @@
-
 /* 隐藏打开APP的弹窗 */
-shreddit-async-loader[bundlename='app_selector'] {
+shreddit-async-loader[bundlename="app_selector"] {
   display: none !important;
 }
 body {
   overflow: auto !important;
+  pointer-events: auto !important;
+}
+
+/* 隐藏广告 */
+shreddit-ad-post {
+     display: none !important;
 }

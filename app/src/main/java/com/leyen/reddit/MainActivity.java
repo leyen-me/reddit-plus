@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         setWebChromeClient();
         setWebViewClient();
         setWebSettings();
+        webView.addJavascriptInterface(new MyJavaScriptInterface(webView), "AndroidInterface");
         webView.loadUrl("https://www.reddit.com/");
 
         setBackPressedCallback();
