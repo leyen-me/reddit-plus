@@ -1,13 +1,14 @@
 package com.leyen.reddit;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -22,6 +23,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.leyen.reddit.service.TranslateService;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,7 +33,6 @@ import java.io.InputStreamReader;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
-    private WebChromeClient webChromeClient;
     private boolean doubleBackToExitPressedOnce = false;
 
     public void pushCss(String cssPath) {
@@ -85,8 +87,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setWebChromeClient() {
-        webChromeClient = new WebChromeClient();
-        webView.setWebChromeClient(webChromeClient);
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                WebView newWebView = new WebView(MainActivity.this);
+                newWebView.setWebViewClient(new WebViewClient());
+                WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                transport.setWebView(newWebView);
+                resultMsg.sendToTarget();
+                return true;
+            }
+        });
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -98,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setAllowUniversalAccessFromFileURLs(true);
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.162 Mobile Safari/537.36");
+
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
     }
 
     public void loadAssets(String htmlPath) {
@@ -108,14 +122,8 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("https://www.reddit.com/")) {
-                    // 让 WebView 加载这个 URL
-                    return false;
-                } else {
-                    // Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    // startActivity(intent);
-                    return true;
-                }
+                view.loadUrl(url);
+                return true;
             }
 
             @Override
@@ -178,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         setWebChromeClient();
         setWebViewClient();
         setWebSettings();
-        webView.addJavascriptInterface(new MyJavaScriptInterface(webView), "AndroidInterface");
+        webView.addJavascriptInterface(new TranslateService(webView), "TranslateService");
         webView.loadUrl("https://www.reddit.com/");
 
         setBackPressedCallback();
