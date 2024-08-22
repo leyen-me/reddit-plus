@@ -31,7 +31,7 @@ const TRANSLATE_TYPE = {
   COMMENT: "COMMENT",
 
   POST_TITLE: "POST_TITLE",
-  POST_CONTENT: "POST_CONTENT",
+  SIMPLE: "SIMPLE",
 };
 
 /**
@@ -47,19 +47,23 @@ const translateMap = new Map();
  * 翻译的所有元素
  * 翻译的所有文本
  */
-function translates(type, key, elements, textList) {
+const translates = (type, key, elements, textList) => {
   translateMap.set(key, { elements, textList });
   TranslateService.translateText(type, key, textList);
-}
+};
+
+const translated = (ele, value) => {
+  ele.setAttribute("data-translated", "true");
+  ele.removeAttribute("data-translating");
+  ele.innerText = value;
+};
 
 const handleTranslateHomeTitle = (ele, value) => {
   if (ele.shadowRoot) {
     const titleSlot = ele.shadowRoot.querySelector("slot[name='title']");
     if (titleSlot) {
       const title = titleSlot.assignedElements()[0];
-      title.setAttribute("data-translated", "true");
-      title.removeAttribute("data-translating");
-      title.innerText = value;
+      translated(title, value);
     }
   }
 };
@@ -69,11 +73,13 @@ const handleTranslateHomeBody = (ele, value) => {
     const slot = ele.shadowRoot.querySelector("slot[name='text-body']");
     if (slot) {
       const bodyEle = slot.assignedElements()[0];
-      bodyEle.setAttribute("data-translated", "true");
-      bodyEle.removeAttribute("data-translating");
-      bodyEle.innerText = value;
+      translated(bodyEle, value);
     }
   }
+};
+
+const handleTranslateComment = (ele, value) => {
+  translated(ele, value);
 };
 
 /**
@@ -86,12 +92,8 @@ const translateCallback = (type, key, index, value) => {
   const ele = elements[index];
   if (ele) {
     switch (type) {
-      case TRANSLATE_TYPE.HOME_TITLE:
-        handleTranslateHomeTitle(ele, value);
-        break;
-      case TRANSLATE_TYPE.HOME_BODY:
-        handleTranslateHomeBody(ele, value);
-        break;
+      case TRANSLATE_TYPE.SIMPLE:
+        translated(ele, value);
     }
   }
 };
@@ -122,12 +124,7 @@ const handleAddHomeTitle2Translate = async () => {
     }
   }
   if (ts.length > 0) {
-    translates(
-      TRANSLATE_TYPE.HOME_TITLE,
-      generateUUID(),
-      transElements,
-      ts
-    );
+    translates(TRANSLATE_TYPE.HOME_TITLE, generateUUID(), transElements, ts);
   }
 };
 
@@ -178,10 +175,15 @@ const handleAddPostJoinButton2Translate = async () => {
   }
 };
 
-const handleAddComment2Translate = async () => {
+/**
+ * 通用的
+ * @param {} querySelectorAll
+ * @param {*} type
+ */
+const handleAddTranslateBySelectorAll = async (querySelectorAll, type) => {
   const ts = [];
   const transElements = [];
-  const comments = document.querySelectorAll('div[slot="comment"]');
+  const comments = document.querySelectorAll(querySelectorAll);
 
   for (let i = 0; i < comments.length; i++) {
     const commentEle = comments[i];
@@ -196,15 +198,23 @@ const handleAddComment2Translate = async () => {
   }
 
   if (ts.length > 0) {
-    translates(TRANSLATE_TYPE.COMMENT, generateUUID(), transElements, ts);
+    translates(type, generateUUID(), transElements, ts);
   }
 };
 
 const handleTranslate = () => {
-  handleAddHomeTitle2Translate();
-  handleAddHomeBody2Translate();
-  handleAddPostJoinButton2Translate();
-  handleAddComment2Translate();
+  // 文章标题
+  handleAddTranslateBySelectorAll('[slot="title"]', TRANSLATE_TYPE.SIMPLE);
+  // 文章内容
+  handleAddTranslateBySelectorAll('[slot="text-body"]', TRANSLATE_TYPE.SIMPLE);
+  // 评论
+  handleAddTranslateBySelectorAll('[slot="comment"]', TRANSLATE_TYPE.SIMPLE);
+  // 推荐文章标题
+  handleAddTranslateBySelectorAll('h3.i18n-list-item-post-title', TRANSLATE_TYPE.SIMPLE);
+  // 文章推荐原因
+  handleAddTranslateBySelectorAll('[slot="credit-bar"] p', TRANSLATE_TYPE.SIMPLE);
+  // 关注按钮
+  handleAddPostJoinButton2Translate()
 };
 
 /**
@@ -224,7 +234,6 @@ observer.observe(document.body, { childList: true, subtree: true });
 /**
  * 监听路由的变化
  */
-
 
 setTimeout(() => {
   debouncedTranslateTitle();
