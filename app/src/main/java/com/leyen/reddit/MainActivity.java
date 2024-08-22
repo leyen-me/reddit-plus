@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.leyen.reddit.service.TranslateService;
 
@@ -33,6 +34,7 @@ import java.io.InputStreamReader;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private boolean doubleBackToExitPressedOnce = false;
 
     public void pushCss(String cssPath) {
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
+                swipeRefreshLayout.setRefreshing(false);
                 pushJs("scripts/index.js");
             }
         });
@@ -172,6 +175,14 @@ public class MainActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
+    public void setWebViewRefreshListener(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                webView.reload();
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +193,9 @@ public class MainActivity extends AppCompatActivity {
         setSystemBars();
 
         webView = findViewById(R.id.webView);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+
+        setWebViewRefreshListener();
         setDebug();
         setWebChromeClient();
         setWebViewClient();

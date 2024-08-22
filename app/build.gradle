@@ -48,6 +48,7 @@ dependencies {
     implementation libs.appcompat
     implementation libs.material
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
