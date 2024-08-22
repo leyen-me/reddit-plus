@@ -11,43 +11,29 @@ body {
 shreddit-ad-post {
   display: none !important;
 }
-
-[data-translating="true"] {
-  color: #000;
-  position: relative;
-  animation: skeleton-animation 1.5s ease-in-out infinite;
+[slot="full-comments-page-ad-link"] {
+  display: none !important;
+}
+shreddit-comments-page-ad {
+  display: none !important;
 }
 
-[data-translating="true"]::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: skeleton-wave 1.5s ease-in-out infinite;
+/* 加载动画 */
+[data-translating="true"] {
+  color: black;
+  position: relative;
+  animation: skeleton-animation 1s ease-in-out infinite;
 }
 
 @keyframes skeleton-animation {
   0% {
-    opacity: 0.7;
+    opacity: 0.3;
   }
   50% {
     opacity: 1;
   }
   100% {
-    opacity: 0.7;
-  }
-}
-
-@keyframes skeleton-wave {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
+    opacity: 0.3;
   }
 }
 
