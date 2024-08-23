@@ -28,21 +28,6 @@ android {
     }
 }
 
-//tasks.register("buildWeb") {
-//    doLast {
-//        def webDir = "${project.rootDir}\\web"
-//        println(webDir)
-//        exec {
-//            workingDir webDir
-//            commandLine 'cmd', '/c', 'pnpm', 'build'
-//            ignoreExitValue = false
-//        }
-//    }
-//}
-//tasks.named("preBuild") {
-//    dependsOn("buildWeb")
-//}
-
 dependencies {
 
     implementation libs.appcompat
