@@ -20,7 +20,6 @@ shreddit-comments-page-ad {
 
 /* 加载动画 */
 [data-translating="true"] {
-  color: black;
   position: relative;
   animation: skeleton-animation 1s ease-in-out infinite;
 }
