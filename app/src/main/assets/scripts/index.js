@@ -27,14 +27,7 @@ const debounce = (func, wait) => {
  * 翻译类型
  */
 const TRANSLATE_TYPE = {
-  HOME_TITLE: "HOME_TITLE",
-  HOME_BODY: "HOME_BODY",
-
-  COMMENT: "COMMENT",
-
-  POST_TITLE: "POST_TITLE",
   SIMPLE: "SIMPLE",
-  SEARCH_TITLE: "SEARCH_TITLE",
 };
 
 /**
@@ -98,65 +91,6 @@ const translateCallback = (type, key, index, value) => {
       case TRANSLATE_TYPE.SIMPLE:
         translated(ele, value);
     }
-  }
-};
-
-/**
- * 翻译首页标题
- */
-const handleAddHomeTitle2Translate = async () => {
-  const ts = [];
-  const transElements = [];
-  const allArticleElements = document.querySelectorAll("shreddit-post");
-
-  for (let i = 0; i < allArticleElements.length; i++) {
-    const post = allArticleElements[i];
-    const titleSlot = post.shadowRoot.querySelector("slot[name='title']");
-    const bodySlot = post.shadowRoot.querySelector("slot[name='text-body']");
-    if (titleSlot) {
-      const titleEle = titleSlot.assignedElements()[0];
-      const title = titleEle.innerText;
-      if (
-        !titleEle.hasAttribute("data-translated") &&
-        !titleEle.hasAttribute("data-translating")
-      ) {
-        titleEle.setAttribute("data-translating", "true");
-        ts.push(title);
-        transElements.push(post);
-      }
-    }
-  }
-  if (ts.length > 0) {
-    translates(TRANSLATE_TYPE.HOME_TITLE, generateUUID(), transElements, ts);
-  }
-};
-
-const handleAddHomeBody2Translate = async () => {
-  const ts = [];
-  const transElements = [];
-  const allArticleElements = document.querySelectorAll("shreddit-post");
-
-  for (let i = 0; i < allArticleElements.length; i++) {
-    const post = allArticleElements[i];
-    const bodySlot = post.shadowRoot.querySelector("slot[name='text-body']");
-    if (bodySlot) {
-      const bodyEle = bodySlot.assignedElements()[0];
-      if (bodyEle) {
-        const body = bodyEle.innerText;
-        if (
-          !bodyEle.hasAttribute("data-translated") &&
-          !bodyEle.hasAttribute("data-translating")
-        ) {
-          bodyEle.setAttribute("data-translating", "true");
-          ts.push(body);
-          transElements.push(post);
-        }
-      }
-    }
-  }
-
-  if (ts.length > 0) {
-    translates(TRANSLATE_TYPE.HOME_BODY, generateUUID(), transElements, ts);
   }
 };
 
@@ -291,7 +225,6 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 // 每隔transGap时间，翻译一次。5秒后停止
 const interval = setInterval(() => {
-  console.log("iner======>");
   debouncedTranslateTitle();
 }, transGap * 2);
 
