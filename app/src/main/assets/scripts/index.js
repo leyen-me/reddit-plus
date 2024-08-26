@@ -3,6 +3,10 @@
 
 const transGap = 100;
 
+const log = (str = "") => {
+  console.log(str);
+};
+
 // 随机生成ID函数
 const generateUUID = (length = 8) => {
   const characters =
